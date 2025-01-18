@@ -1023,7 +1023,7 @@ const uint8_t CanardCANLengthToDLC[65] = {
     15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,  // 49-64
 };
 
-CanardInstanceCYP canardInit(const CanardMemoryAllocate memory_allocate, const CanardMemoryFree memory_free)
+CanardInstanceCYP canardInitCYP(const CanardMemoryAllocate memory_allocate, const CanardMemoryFree memory_free)
 {
     CANARD_ASSERT(memory_allocate != NULL);
     CANARD_ASSERT(memory_free != NULL);

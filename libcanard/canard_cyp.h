@@ -405,7 +405,7 @@ typedef struct CanardFilter
 /// To safely discard it, simply remove all existing subscriptions, and don't forget about the TX queues.
 ///
 /// The time complexity is constant. This function does not invoke the dynamic memory manager.
-CanardInstanceCYP canardInit(const CanardMemoryAllocate memory_allocate, const CanardMemoryFree memory_free);
+CanardInstanceCYP canardInitCYP(const CanardMemoryAllocate memory_allocate, const CanardMemoryFree memory_free);
 
 /// Construct a new transmission queue instance with the specified values for capacity and mtu_bytes.
 /// No memory allocation is going to take place until the queue is actually pushed to.
