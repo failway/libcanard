@@ -628,7 +628,7 @@ int8_t canardRxAccept(CanardInstanceCYP* const        ins,
 /// Subscription instances have large look-up tables to ensure that the temporal properties of the algorithms are
 /// invariant to the network configuration (i.e., a node that is validated on a network containing one other node
 /// will provably perform identically on a network that contains X nodes). This is a conscious time-memory trade-off.
-int8_t canardRxSubscribe(CYP* const       ins,
+int8_t canardRxSubscribe(CanardInstanceCYP* const       ins,
                          const CanardTransferKind    transfer_kind,
                          const CanardPortID          port_id,
                          const size_t                extent,
