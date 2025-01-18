@@ -147,14 +147,14 @@ CANARD_PRIVATE TransferCRC crcAdd(const TransferCRC crc, const size_t size, cons
 
 // --------------------------------------------- TRANSMISSION ---------------------------------------------
 
-/// This is a subclass of CanardTxQueueItem. A pointer to this type can be cast to CanardTxQueueItem safely.
+/// This is a subclass of CanardTxQueueItemCYP. A pointer to this type can be cast to CanardTxQueueItemCYP safely.
 /// This is standard-compliant. The paragraph 6.7.2.1.15 says:
 ///     A pointer to a structure object, suitably converted, points to its initial member (or if that member is a
 ///     bit-field, then to the unit in which it resides), and vice versa. There may be unnamed padding within a
 ///     structure object, but not at its beginning.
 typedef struct TxItem
 {
-    CanardTxQueueItem base;
+    CanardTxQueueItemCYP base;
     uint8_t           payload_buffer[CANARD_MTU_MAX];
 } TxItem;
 
@@ -327,8 +327,8 @@ CANARD_PRIVATE TxItem* txAllocateQueueItem(CanardInstance* const   ins,
 CANARD_PRIVATE int8_t txAVLPredicate(void* const user_reference,  // NOSONAR Cavl API requires pointer to non-const.
                                      const CanardTreeNode* const node)
 {
-    const CanardTxQueueItem* const target = (const CanardTxQueueItem*) user_reference;
-    const CanardTxQueueItem* const other  = (const CanardTxQueueItem*) (const void*) node;
+    const CanardTxQueueItemCYP* const target = (const CanardTxQueueItemCYP*) user_reference;
+    const CanardTxQueueItemCYP* const other  = (const CanardTxQueueItemCYP*) (const void*) node;
     CANARD_ASSERT((target != NULL) && (other != NULL));
     return (target->frame.extended_can_id >= other->frame.extended_can_id) ? +1 : -1;
 }
@@ -416,7 +416,7 @@ CANARD_PRIVATE TxChain txGenerateMultiFrameChain(CanardInstance* const   ins,
         {
             // C std, 6.7.2.1.15: A pointer to a structure object <...> points to its initial member, and vice versa.
             // Can't just read tqi->base because tqi may be NULL; https://github.com/OpenCyphal/libcanard/issues/203.
-            out.tail->base.next_in_transfer = (CanardTxQueueItem*) tqi;
+            out.tail->base.next_in_transfer = (CanardTxQueueItemCYP*) tqi;
         }
         out.tail = tqi;
         if (NULL == out.tail)
@@ -509,7 +509,7 @@ CANARD_PRIVATE int32_t txPushMultiFrame(CanardTxQueue* const    que,
                                                      payload);
         if (sq.tail != NULL)
         {
-            CanardTxQueueItem* next = &sq.head->base;
+            CanardTxQueueItemCYP* next = &sq.head->base;
             do
             {
                 const CanardTreeNode* const res =
@@ -528,10 +528,10 @@ CANARD_PRIVATE int32_t txPushMultiFrame(CanardTxQueue* const    que,
         else
         {
             out                     = -CANARD_ERROR_OUT_OF_MEMORY;
-            CanardTxQueueItem* head = &sq.head->base;
+            CanardTxQueueItemCYP* head = &sq.head->base;
             while (head != NULL)
             {
-                CanardTxQueueItem* const next = head->next_in_transfer;
+                CanardTxQueueItemCYP* const next = head->next_in_transfer;
                 ins->memory_free(ins, head);
                 head = next;
             }
@@ -1096,27 +1096,27 @@ int32_t canardTxPush(CanardTxQueue* const                que,
     return out;
 }
 
-const CanardTxQueueItem* canardTxPeek(const CanardTxQueue* const que)
+const CanardTxQueueItemCYP* canardTxPeek(const CanardTxQueue* const que)
 {
-    const CanardTxQueueItem* out = NULL;
+    const CanardTxQueueItemCYP* out = NULL;
     if (que != NULL)
     {
         // Paragraph 6.7.2.1.15 of the C standard says:
         //     A pointer to a structure object, suitably converted, points to its initial member, and vice versa.
-        out = (const CanardTxQueueItem*) (void*) cavlFindExtremum(que->root, false);
+        out = (const CanardTxQueueItemCYP*) (void*) cavlFindExtremum(que->root, false);
     }
     return out;
 }
 
-CanardTxQueueItem* canardTxPop(CanardTxQueue* const que, const CanardTxQueueItem* const item)
+CanardTxQueueItemCYP* canardTxPop(CanardTxQueue* const que, const CanardTxQueueItemCYP* const item)
 {
-    CanardTxQueueItem* out = NULL;
+    CanardTxQueueItemCYP* out = NULL;
     if ((que != NULL) && (item != NULL))
     {
         // Intentional violation of MISRA: casting away const qualifier. This is considered safe because the API
         // contract dictates that the pointer shall point to a mutable entity in RAM previously allocated by the
         // memory manager. It is difficult to avoid this cast in this context.
-        out = (CanardTxQueueItem*) item;  // NOSONAR casting away const qualifier.
+        out = (CanardTxQueueItemCYP*) item;  // NOSONAR casting away const qualifier.
         // Paragraph 6.7.2.1.15 of the C standard says:
         //     A pointer to a structure object, suitably converted, points to its initial member, and vice versa.
         // Note that the highest-priority frame is always a leaf node in the AVL tree, which means that it is very

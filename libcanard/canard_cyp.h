@@ -134,7 +134,7 @@ extern "C" {
 // Forward declarations.
 typedef struct CanardInstance    CanardInstance;
 typedef struct CanardTreeNode    CanardTreeNode;
-typedef struct CanardTxQueueItem CanardTxQueueItem;
+typedef struct CanardTxQueueItemCYP CanardTxQueueItemCYP;
 typedef uint64_t                 CanardMicrosecond;
 typedef uint16_t                 CanardPortID;
 typedef uint8_t                  CanardNodeID;
@@ -269,7 +269,7 @@ typedef struct CanardTxQueue
 } CanardTxQueue;
 
 /// One frame stored in the transmission queue along with its metadata.
-struct CanardTxQueueItem
+struct CanardTxQueueItemCYP
 {
     /// Internal use only; do not access this field.
     CanardTreeNode base;
@@ -279,7 +279,7 @@ struct CanardTxQueueItem
     /// It can be useful though for pulling pending frames from the TX queue if at least one frame of their transfer
     /// failed to transmit; the idea is that if at least one frame is missing, the transfer will not be received by
     /// remote nodes anyway, so all its remaining frames can be dropped from the queue at once using canardTxPop().
-    CanardTxQueueItem* next_in_transfer;
+    CanardTxQueueItemCYP* next_in_transfer;
 
     /// This is the same value that is passed to canardTxPush().
     /// Frames whose transmission deadline is in the past shall be dropped.
@@ -461,7 +461,7 @@ CanardTxQueue canardTxInit(const size_t capacity, const size_t mtu_bytes);
 ///
 /// The memory allocation requirement is one allocation per transport frame. A single-frame transfer takes one
 /// allocation; a multi-frame transfer of N frames takes N allocations. The size of each allocation is
-/// (sizeof(CanardTxQueueItem) + MTU).
+/// (sizeof(CanardTxQueueItemCYP) + MTU).
 int32_t canardTxPush(CanardTxQueue* const                que,
                      CanardInstance* const               ins,
                      const CanardMicrosecond             tx_deadline_usec,
@@ -491,7 +491,7 @@ int32_t canardTxPush(CanardTxQueue* const                que,
 /// not attempt to free it.
 ///
 /// The time complexity is logarithmic of the queue size. This function does not invoke the dynamic memory manager.
-const CanardTxQueueItem* canardTxPeek(const CanardTxQueue* const que);
+const CanardTxQueueItemCYP* canardTxPeek(const CanardTxQueue* const que);
 
 /// This function transfers the ownership of the specified element of the prioritized transmission queue from the queue
 /// to the application. The element does not necessarily need to be the top one -- it is safe to dequeue any element.
@@ -502,7 +502,7 @@ const CanardTxQueueItem* canardTxPeek(const CanardTxQueue* const que);
 /// If any of the arguments are NULL, the function has no effect and returns NULL.
 ///
 /// The time complexity is logarithmic of the queue size. This function does not invoke the dynamic memory manager.
-CanardTxQueueItem* canardTxPop(CanardTxQueue* const que, const CanardTxQueueItem* const item);
+CanardTxQueueItemCYP* canardTxPop(CanardTxQueue* const que, const CanardTxQueueItemCYP* const item);
 
 /// This function implements the transfer reassembly logic. It accepts a transport frame from any of the redundant
 /// interfaces, locates the appropriate subscription state, and, if found, updates it. If the frame completed a
