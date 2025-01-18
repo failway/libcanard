@@ -132,7 +132,7 @@ extern "C" {
 #define CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC 2000000UL
 
 // Forward declarations.
-typedef struct CanardInstance    CanardInstance;
+typedef struct CanardInstanceCYP    CanardInstanceCYP;
 typedef struct CanardTreeNode    CanardTreeNode;
 typedef struct CanardTxQueueItemCYP CanardTxQueueItemCYP;
 typedef uint64_t                 CanardMicrosecond;
@@ -346,17 +346,17 @@ typedef struct CanardRxTransferCYP
 ///     - The worst-case memory fragmentation should be bounded and easily predictable.
 /// If the standard dynamic memory manager of the target platform does not satisfy the above requirements,
 /// consider using O1Heap: https://github.com/pavel-kirienko/o1heap.
-typedef void* (*CanardMemoryAllocate)(CanardInstance* ins, size_t amount);
+typedef void* (*CanardMemoryAllocate)(CanardInstanceCYP* ins, size_t amount);
 
 /// The counterpart of the above -- this function is invoked to return previously allocated memory to the allocator.
 /// The semantics are similar to free():
 ///     - The pointer was previously returned by the allocation function.
 ///     - The pointer may be NULL, in which case the function shall have no effect.
 ///     - The execution time should be constant (O(1)).
-typedef void (*CanardMemoryFree)(CanardInstance* ins, void* pointer);
+typedef void (*CanardMemoryFree)(CanardInstanceCYP* ins, void* pointer);
 
 /// This is the core structure that keeps all of the states and allocated resources of the library instance.
-struct CanardInstance
+struct CanardInstanceCYP
 {
     /// User pointer that can link this instance with other objects.
     /// This field can be changed arbitrarily, the library does not access it after initialization.
@@ -405,7 +405,7 @@ typedef struct CanardFilter
 /// To safely discard it, simply remove all existing subscriptions, and don't forget about the TX queues.
 ///
 /// The time complexity is constant. This function does not invoke the dynamic memory manager.
-CanardInstance canardInit(const CanardMemoryAllocate memory_allocate, const CanardMemoryFree memory_free);
+CanardInstanceCYP canardInit(const CanardMemoryAllocate memory_allocate, const CanardMemoryFree memory_free);
 
 /// Construct a new transmission queue instance with the specified values for capacity and mtu_bytes.
 /// No memory allocation is going to take place until the queue is actually pushed to.
@@ -463,7 +463,7 @@ CanardTxQueue canardTxInit(const size_t capacity, const size_t mtu_bytes);
 /// allocation; a multi-frame transfer of N frames takes N allocations. The size of each allocation is
 /// (sizeof(CanardTxQueueItemCYP) + MTU).
 int32_t canardTxPush(CanardTxQueue* const                que,
-                     CanardInstance* const               ins,
+                     CanardInstanceCYP* const               ins,
                      const CanardMicrosecond             tx_deadline_usec,
                      const CanardTransferMetadata* const metadata,
                      const size_t                        payload_size,
@@ -590,7 +590,7 @@ CanardTxQueueItemCYP* canardTxPop(CanardTxQueue* const que, const CanardTxQueueI
 ///     - The received frame is a valid Cyphal/CAN transport frame, but there is no matching subscription,
 ///       the frame did not complete a transfer, the frame forms an invalid frame sequence, the frame is a duplicate,
 ///       the frame is unicast to a different node (address mismatch).
-int8_t canardRxAccept(CanardInstance* const        ins,
+int8_t canardRxAccept(CanardInstanceCYP* const        ins,
                       const CanardMicrosecond      timestamp_usec,
                       const CanardFrame* const     frame,
                       const uint8_t                redundant_iface_index,
@@ -628,7 +628,7 @@ int8_t canardRxAccept(CanardInstance* const        ins,
 /// Subscription instances have large look-up tables to ensure that the temporal properties of the algorithms are
 /// invariant to the network configuration (i.e., a node that is validated on a network containing one other node
 /// will provably perform identically on a network that contains X nodes). This is a conscious time-memory trade-off.
-int8_t canardRxSubscribe(CanardInstance* const       ins,
+int8_t canardRxSubscribe(CYP* const       ins,
                          const CanardTransferKind    transfer_kind,
                          const CanardPortID          port_id,
                          const size_t                extent,
@@ -645,7 +645,7 @@ int8_t canardRxSubscribe(CanardInstance* const       ins,
 ///
 /// The time complexity is logarithmic from the number of current subscriptions under the specified transfer kind.
 /// This function does not allocate new memory.
-int8_t canardRxUnsubscribe(CanardInstance* const    ins,
+int8_t canardRxUnsubscribe(CanardInstanceCYP* const    ins,
                            const CanardTransferKind transfer_kind,
                            const CanardPortID       port_id);
 
@@ -659,7 +659,7 @@ int8_t canardRxUnsubscribe(CanardInstance* const    ins,
 ///
 /// The time complexity is logarithmic from the number of current subscriptions under the specified transfer kind.
 /// This function does not allocate new memory.
-int8_t canardRxGetSubscription(CanardInstance* const        ins,
+int8_t canardRxGetSubscription(CanardInstanceCYP* const        ins,
                                const CanardTransferKind     transfer_kind,
                                const CanardPortID           port_id,
                                CanardRxSubscription** const out_subscription);

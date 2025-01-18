@@ -296,7 +296,7 @@ CANARD_PRIVATE size_t txRoundFramePayloadSizeUp(const size_t x)
 }
 
 /// The item is only allocated and initialized, but NOT included into the queue! The caller needs to do that.
-CANARD_PRIVATE TxItem* txAllocateQueueItem(CanardInstance* const   ins,
+CANARD_PRIVATE TxItem* txAllocateQueueItem(CanardInstanceCYP* const   ins,
                                            const uint32_t          id,
                                            const CanardMicrosecond deadline_usec,
                                            const size_t            payload_size)
@@ -335,7 +335,7 @@ CANARD_PRIVATE int8_t txAVLPredicate(void* const user_reference,  // NOSONAR Cav
 
 /// Returns the number of frames enqueued or error (i.e., =1 or <0).
 CANARD_PRIVATE int32_t txPushSingleFrame(CanardTxQueue* const    que,
-                                         CanardInstance* const   ins,
+                                         CanardInstanceCYP* const   ins,
                                          const CanardMicrosecond deadline_usec,
                                          const uint32_t          can_id,
                                          const CanardTransferID  transfer_id,
@@ -381,7 +381,7 @@ CANARD_PRIVATE int32_t txPushSingleFrame(CanardTxQueue* const    que,
 }
 
 /// Produces a chain of Tx queue items for later insertion into the Tx queue. The tail is NULL if OOM.
-CANARD_PRIVATE TxChain txGenerateMultiFrameChain(CanardInstance* const   ins,
+CANARD_PRIVATE TxChain txGenerateMultiFrameChain(CanardInstanceCYP* const   ins,
                                                  const size_t            presentation_layer_mtu,
                                                  const CanardMicrosecond deadline_usec,
                                                  const uint32_t          can_id,
@@ -482,7 +482,7 @@ CANARD_PRIVATE TxChain txGenerateMultiFrameChain(CanardInstance* const   ins,
 
 /// Returns the number of frames enqueued or error.
 CANARD_PRIVATE int32_t txPushMultiFrame(CanardTxQueue* const    que,
-                                        CanardInstance* const   ins,
+                                        CanardInstanceCYP* const   ins,
                                         const size_t            presentation_layer_mtu,
                                         const CanardMicrosecond deadline_usec,
                                         const uint32_t          can_id,
@@ -677,7 +677,7 @@ CANARD_PRIVATE uint8_t rxComputeTransferIDDifference(const uint8_t a, const uint
     return (uint8_t) diff;
 }
 
-CANARD_PRIVATE int8_t rxSessionWritePayload(CanardInstance* const          ins,
+CANARD_PRIVATE int8_t rxSessionWritePayload(CanardInstanceCYP* const          ins,
                                             CanardInternalRxSession* const rxs,
                                             const size_t                   extent,
                                             const size_t                   payload_size,
@@ -729,7 +729,7 @@ CANARD_PRIVATE int8_t rxSessionWritePayload(CanardInstance* const          ins,
     return out;
 }
 
-CANARD_PRIVATE void rxSessionRestart(CanardInstance* const ins, CanardInternalRxSession* const rxs)
+CANARD_PRIVATE void rxSessionRestart(CanardInstanceCYP* const ins, CanardInternalRxSession* const rxs)
 {
     CANARD_ASSERT(ins != NULL);
     CANARD_ASSERT(rxs != NULL);
@@ -743,7 +743,7 @@ CANARD_PRIVATE void rxSessionRestart(CanardInstance* const ins, CanardInternalRx
     rxs->toggle = INITIAL_TOGGLE_STATE;
 }
 
-CANARD_PRIVATE int8_t rxSessionAcceptFrame(CanardInstance* const          ins,
+CANARD_PRIVATE int8_t rxSessionAcceptFrame(CanardInstanceCYP* const          ins,
                                            CanardInternalRxSession* const rxs,
                                            const RxFrameModel* const      frame,
                                            const size_t                   extent,
@@ -871,7 +871,7 @@ CANARD_PRIVATE void rxSessionSynchronize(CanardInternalRxSession* const rxs,
 /// are given and the particular algorithms are left to be implementation-defined. Such abstract approach is much
 /// advantageous because it allows implementers to choose whatever solution works best for the specific application at
 /// hand, while the wire compatibility is still guaranteed by the high-level requirements given in the specification.
-CANARD_PRIVATE int8_t rxSessionUpdate(CanardInstance* const          ins,
+CANARD_PRIVATE int8_t rxSessionUpdate(CanardInstanceCYP* const          ins,
                                       CanardInternalRxSession* const rxs,
                                       const RxFrameModel* const      frame,
                                       const uint8_t                  redundant_iface_index,
@@ -909,7 +909,7 @@ CANARD_PRIVATE int8_t rxSessionUpdate(CanardInstance* const          ins,
     return out;
 }
 
-CANARD_PRIVATE int8_t rxAcceptFrame(CanardInstance* const       ins,
+CANARD_PRIVATE int8_t rxAcceptFrame(CanardInstanceCYP* const       ins,
                                     CanardRxSubscription* const subscription,
                                     const RxFrameModel* const   frame,
                                     const uint8_t               redundant_iface_index,
@@ -1023,11 +1023,11 @@ const uint8_t CanardCANLengthToDLC[65] = {
     15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,  // 49-64
 };
 
-CanardInstance canardInit(const CanardMemoryAllocate memory_allocate, const CanardMemoryFree memory_free)
+CanardInstanceCYP canardInit(const CanardMemoryAllocate memory_allocate, const CanardMemoryFree memory_free)
 {
     CANARD_ASSERT(memory_allocate != NULL);
     CANARD_ASSERT(memory_free != NULL);
-    const CanardInstance out = {
+    const CanardInstanceCYP out = {
         .user_reference   = NULL,
         .node_id          = CANARD_NODE_ID_UNSET,
         .memory_allocate  = memory_allocate,
@@ -1050,7 +1050,7 @@ CanardTxQueue canardTxInit(const size_t capacity, const size_t mtu_bytes)
 }
 
 int32_t canardTxPush(CanardTxQueue* const                que,
-                     CanardInstance* const               ins,
+                     CanardInstanceCYP* const               ins,
                      const CanardMicrosecond             tx_deadline_usec,
                      const CanardTransferMetadata* const metadata,
                      const size_t                        payload_size,
@@ -1127,7 +1127,7 @@ CanardTxQueueItemCYP* canardTxPop(CanardTxQueue* const que, const CanardTxQueueI
     return out;
 }
 
-int8_t canardRxAccept(CanardInstance* const        ins,
+int8_t canardRxAccept(CanardInstanceCYP* const        ins,
                       const CanardMicrosecond      timestamp_usec,
                       const CanardFrame* const     frame,
                       const uint8_t                redundant_iface_index,
@@ -1179,7 +1179,7 @@ int8_t canardRxAccept(CanardInstance* const        ins,
     return out;
 }
 
-int8_t canardRxSubscribe(CanardInstance* const       ins,
+int8_t canardRxSubscribe(CanardInstanceCYP* const       ins,
                          const CanardTransferKind    transfer_kind,
                          const CanardPortID          port_id,
                          const size_t                extent,
@@ -1218,7 +1218,7 @@ int8_t canardRxSubscribe(CanardInstance* const       ins,
     return out;
 }
 
-int8_t canardRxUnsubscribe(CanardInstance* const    ins,
+int8_t canardRxUnsubscribe(CanardInstanceCYP* const    ins,
                            const CanardTransferKind transfer_kind,
                            const CanardPortID       port_id)
 {
@@ -1249,7 +1249,7 @@ int8_t canardRxUnsubscribe(CanardInstance* const    ins,
     return out;
 }
 
-int8_t canardRxGetSubscription(CanardInstance* const        ins,
+int8_t canardRxGetSubscription(CanardInstanceCYP* const        ins,
                                const CanardTransferKind     transfer_kind,
                                const CanardPortID           port_id,
                                CanardRxSubscription** const out_subscription)
