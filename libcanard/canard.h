@@ -83,6 +83,7 @@
 #ifndef CANARD_H_INCLUDED
 #define CANARD_H_INCLUDED
 
+namespace cyphal {
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -711,4 +712,5 @@ CanardFilter canardConsolidateFilters(const CanardFilter* const a, const CanardF
 #ifdef __cplusplus
 }
 #endif
+}
 #endif
