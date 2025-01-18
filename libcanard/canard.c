@@ -2,7 +2,7 @@
 /// Copyright (c) 2016 OpenCyphal.
 /// Author: Pavel Kirienko <pavel@opencyphal.org>
 
-#include "canard.h"
+#include "canard_cyp.h"
 #include <string.h>
 
 // --------------------------------------------- BUILD CONFIGURATION ---------------------------------------------
