@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "canard.h"
+#include "canard_cyp.h"
 
 /// Modified for use with Libcanard: use the same assertion check macro if provided.
 #ifdef CANARD_ASSERT

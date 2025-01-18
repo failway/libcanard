@@ -747,7 +747,7 @@ CANARD_PRIVATE int8_t rxSessionAcceptFrame(CanardInstance* const          ins,
                                            CanardInternalRxSession* const rxs,
                                            const RxFrameModel* const      frame,
                                            const size_t                   extent,
-                                           CanardRxTransfer* const        out_transfer)
+                                           CanardRxTransferCYP* const        out_transfer)
 {
     CANARD_ASSERT(ins != NULL);
     CANARD_ASSERT(rxs != NULL);
@@ -877,7 +877,7 @@ CANARD_PRIVATE int8_t rxSessionUpdate(CanardInstance* const          ins,
                                       const uint8_t                  redundant_iface_index,
                                       const CanardMicrosecond        transfer_id_timeout_usec,
                                       const size_t                   extent,
-                                      CanardRxTransfer* const        out_transfer)
+                                      CanardRxTransferCYP* const        out_transfer)
 {
     CANARD_ASSERT(ins != NULL);
     CANARD_ASSERT(rxs != NULL);
@@ -913,7 +913,7 @@ CANARD_PRIVATE int8_t rxAcceptFrame(CanardInstance* const       ins,
                                     CanardRxSubscription* const subscription,
                                     const RxFrameModel* const   frame,
                                     const uint8_t               redundant_iface_index,
-                                    CanardRxTransfer* const     out_transfer)
+                                    CanardRxTransferCYP* const     out_transfer)
 {
     CANARD_ASSERT(ins != NULL);
     CANARD_ASSERT(subscription != NULL);
@@ -1131,7 +1131,7 @@ int8_t canardRxAccept(CanardInstance* const        ins,
                       const CanardMicrosecond      timestamp_usec,
                       const CanardFrame* const     frame,
                       const uint8_t                redundant_iface_index,
-                      CanardRxTransfer* const      out_transfer,
+                      CanardRxTransferCYP* const      out_transfer,
                       CanardRxSubscription** const out_subscription)
 {
     int8_t out = -CANARD_ERROR_INVALID_ARGUMENT;

@@ -324,7 +324,7 @@ typedef struct CanardRxSubscription
 } CanardRxSubscription;
 
 /// Reassembled incoming transfer returned by canardRxAccept().
-typedef struct CanardRxTransfer
+typedef struct CanardRxTransferCYP
 {
     CanardTransferMetadata metadata;
 
@@ -336,7 +336,7 @@ typedef struct CanardRxTransfer
     /// The application is required to deallocate the payload buffer after the transfer is processed.
     size_t payload_size;
     void*  payload;
-} CanardRxTransfer;
+} CanardRxTransferCYP;
 
 /// A pointer to the memory allocation function. The semantics are similar to malloc():
 ///     - The returned pointer shall point to an uninitialized block of memory that is at least "amount" bytes large.
@@ -594,7 +594,7 @@ int8_t canardRxAccept(CanardInstance* const        ins,
                       const CanardMicrosecond      timestamp_usec,
                       const CanardFrame* const     frame,
                       const uint8_t                redundant_iface_index,
-                      CanardRxTransfer* const      out_transfer,
+                      CanardRxTransferCYP* const      out_transfer,
                       CanardRxSubscription** const out_subscription);
 
 /// This function creates a new subscription, allowing the application to register its interest in a particular
