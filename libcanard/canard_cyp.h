@@ -80,8 +80,8 @@
 /// Author: Pavel Kirienko <pavel@opencyphal.org>
 /// Contributors: https://github.com/OpenCyphal/libcanard/contributors.
 
-#ifndef CANARD_H_INCLUDED
-#define CANARD_H_INCLUDED
+#ifndef CYPHAL_CANARD_H
+#define CYPHAL_CANARD_H
 
 
 #include <stdbool.h>
