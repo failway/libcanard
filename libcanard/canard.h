@@ -83,7 +83,7 @@
 #ifndef CANARD_H_INCLUDED
 #define CANARD_H_INCLUDED
 
-namespace cyphal {
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -91,7 +91,7 @@ namespace cyphal {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+namespace cyphal {
 /// Semantic version of this library (not the Cyphal specification).
 /// API will be backward compatible within the same major version.
 #define CANARD_VERSION_MAJOR 3
@@ -708,9 +708,9 @@ CanardFilter canardMakeFilterForServices(const CanardNodeID local_node_id);
 /// For details, see the "Automatic hardware acceptance filter configuration" note under the Cyphal/CAN section
 /// in the Transport Layer chapter of the Cyphal specification.
 CanardFilter canardConsolidateFilters(const CanardFilter* const a, const CanardFilter* const b);
-
+}// namespace cyphal
 #ifdef __cplusplus
 }
 #endif
-}
+
 #endif
