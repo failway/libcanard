@@ -3,7 +3,7 @@
 // Author: Pavel Kirienko <pavel@opencyphal.org>
 // Contributors: https://github.com/OpenCyphal/libcanard/contributors
 
-#include "canard.h"
+#include "cyphal.h"
 #include <assert.h>
 #include <limits.h>
 #include <stddef.h>
